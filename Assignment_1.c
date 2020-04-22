@@ -4,14 +4,19 @@
 #include <pthread.h>
 #include <unistd.h>
 
+unsigned int changetime = 1;
+int flag = 0;
+pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+
 void *myfunc1(void *ptr)
 {
    char input[0],*buffer;
-   int *changetime = (int*)malloc(sizeof(int));  
+   unsigned int *newtime = (unsigned int*)malloc(sizeof(unsigned int));
    printf("Please enter a command\n q:Quit current program\n c:Create string buffer\n s:Insert user key in string into buffer\n g:Print string buffer\n t:Change Thread 2 updating time\n");
    while(1)
-   { 
-   
+   {
+
    scanf("%c",input);
 
    switch(input[0])
@@ -35,7 +40,7 @@ void *myfunc1(void *ptr)
          scanf("%s",string);
          buffer=string;
          break;
-  
+
       }
 
       case 'g':
@@ -43,9 +48,18 @@ void *myfunc1(void *ptr)
       break;
 
       case 't':
-      {
-         printf("Enter updated time\n");
-         scanf("%i",changetime);
+      {      
+         printf("Enter updated time\n");        
+         scanf("%u",newtime);
+         pthread_mutex_lock(&m);
+         changetime = *newtime;
+         pthread_mutex_unlock(&m);
+         break;
+      }
+
+      case 'f':
+      {       
+         flag = 0;
          break;
       }
 
@@ -56,20 +70,36 @@ void *myfunc1(void *ptr)
 void *myfunc2(void *ptr)
 {
    char string = 'a';
-   pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
    pthread_mutex_lock(&m);
-   while(string != 'z')
+
+   while(string != '{')
    {
-   printf("%c\n",string);
-   string+=1;
-   sleep(1);   
+      if(flag == 0)
+      {
+         pthread_cond_wait(&cond,&m);  
+      }
+
+      else
+      {
+      
+      printf("%c\n",string);
+      string+=1;
+  
+      sleep(changetime);  
+
+      }
+ 
    }
-   pthread_mutex_unlock(&m);
+   pthread_mutex_unlock(&m);     
 }
 
-int main() 
+int main()
 {
    pthread_t t1,t2;
-   myfunc2(NULL);
-   
+   pthread_create(&t1,NULL,myfunc1,"Thread1");
+
+   while(1)
+   {
+      pthread_create(&t2,NULL,myfunc2,"Thread2");
+   }
 }
