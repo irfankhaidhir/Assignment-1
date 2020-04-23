@@ -14,7 +14,7 @@ q : Quit current program (whole program)
 c : create a string buffer
 s : insert user key in string into buffer (created by c)
 g : print string buffer (user key in-in string using command s)
-s : change thread 2 updating time
+t : change thread 2 updating time
 f : flag high
 
 Thread 2:

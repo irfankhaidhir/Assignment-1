@@ -15,7 +15,7 @@ Command supported:
 
 ‘g’ : print string buffer (user key in-in string using command ‘s’)
 
-‘s’ : change thread 2 updating time
+‘t’ : change thread 2 updating time
 
 ‘f’ : flag HIGH
 
