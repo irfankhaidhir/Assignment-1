@@ -13,7 +13,6 @@ Command supported:
 q : Quit current program (whole program)
 c : create a string buffer
 s : insert user key in string into buffer (created by c)
-Up to you to decide how user key in the desire string
 g : print string buffer (user key in-in string using command s)
 s : change thread 2 updating time
 f : flag high
