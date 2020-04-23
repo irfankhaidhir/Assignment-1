@@ -131,8 +131,7 @@ void *myfunc2(void *ptr)
 int main()
 {
 
-   pthread_create(&t1,NULL,myfunc1,"Thread1");
-   pthread_create(&t2,NULL,myfunc2,"Thread2");   
+   pthread_create(&t1,NULL,myfunc1,"Thread1");  
    while (1)
    {
       pthread_create(&t2,NULL,myfunc2,"Thread2");         
