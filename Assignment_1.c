@@ -45,7 +45,7 @@ pthread_t t1,t2;
 pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER, m1 = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
-void *myfunc1(void *ptr)
+void *myfunc1(void *ptr) //Thread t1
 {
    char input[0];
    unsigned int *newtime = (unsigned int*)malloc(sizeof(unsigned int));
@@ -98,7 +98,6 @@ void *myfunc1(void *ptr)
          flag = 1;
          printf("Please wait...\n");
          pthread_mutex_unlock(&m1);
-         //sleep(10000);
          break;
       }
 
@@ -106,9 +105,8 @@ void *myfunc1(void *ptr)
    }
 }
 
-void *myfunc2(void *ptr)
+void *myfunc2(void *ptr) //Thread t2
 {
-   //char string = 'a';
 
       if(flag == 0)
       {
@@ -123,8 +121,7 @@ void *myfunc2(void *ptr)
          sleep(changetime); 
          pthread_mutex_unlock(&m); 
       }
-
-      //pthread_join(t1,NULL);        
+     
 }
 
 int main()
