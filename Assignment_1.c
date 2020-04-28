@@ -15,7 +15,7 @@ c : create a string buffer
 s : insert user key in string into buffer (created by c)
 g : print string buffer (user key in-in string using command s)
 t : change thread 2 updating time
-f : flag high
+f : flag HIGH
 
 Thread 2:
 
