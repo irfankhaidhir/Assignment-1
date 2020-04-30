@@ -39,7 +39,7 @@ Instructions:
 unsigned int changetime = 1;
 char *buffer;
 pthread_t t1,t2;
-pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER, m1 = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 void *myfunc1(void *ptr) //Thread t1
