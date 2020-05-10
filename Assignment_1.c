@@ -1,7 +1,7 @@
 /*
 
 Created by: Irfan
-Function: 
+Function:
 
 Upon process running, create 2 thread, thread function as describe below:
 
@@ -15,6 +15,8 @@ c : create a string buffer
 s : insert user key in string into buffer (created by c)
 g : print string buffer (user key in-in string using command s)
 t : change thread 2 updating time
+f : flag HIGH
+z : flag LOW
 
 Thread 2:
 
@@ -28,6 +30,8 @@ Instructions:
    2. Input string
    3. Print out buffer (Optional)
    4. Update time for Thread 2 (Optional)
+   5. Set flag to HIGH to begin increment
+   6. Set flag to LOW to pause increment (Optional)
 */
 
 #include <stdio.h>
@@ -37,6 +41,7 @@ Instructions:
 #include <unistd.h>
 
 unsigned int changetime = 1;
+int flag = 0, stopprocess = 0;
 char *buffer;
 pthread_t t1,t2;
 pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
@@ -46,7 +51,7 @@ void *myfunc1(void *ptr) //Thread t1
 {
    char input[0];
    unsigned int *newtime = (unsigned int*)malloc(sizeof(unsigned int));
-   printf("Please enter a command\n q:Quit current program\n c:Create string buffer\n s:Insert user key in string into buffer\n g:Print string buffer\n t:Change Thread 2 updating time\n");
+   printf("Please enter a command\n q:Quit current program\n c:Create string buffer\n s:Insert user key in string into buffer\n g:Print string buffer\n t:Change Thread 2 updating time\n f:Flag HIGH\n z:Flag LOW\n");
    while(1)
    {
 
@@ -55,8 +60,13 @@ void *myfunc1(void *ptr) //Thread t1
    switch(input[0])
    {
       case 'q':
-      exit(42);
-      break;
+      {
+         free(newtime);
+         pthread_mutex_lock(&m);
+         stopprocess = 1;
+         pthread_mutex_unlock(&m);
+         break;
+      }
 
       case 'c':
       {
@@ -80,43 +90,59 @@ void *myfunc1(void *ptr) //Thread t1
       break;
 
       case 't':
-      {      
-         printf("Enter updated time\n");        
+      {
+         printf("Enter updated time\n");
          scanf("%u",newtime);
          changetime = *newtime;
-         free(newtime);
          break;
       }
 
+      case 'f':
+      {
+    	   pthread_mutex_lock(&m);
+         flag = 1;
+         pthread_mutex_unlock(&m);
+         break;
+      }
+
+      case 'z':
+      {
+         pthread_mutex_lock(&m);
+         flag = 0;
+         pthread_mutex_unlock(&m);
+         break;
+      }
    }
    }
 }
 
 void *myfunc2(void *ptr) //Thread t2
 {
-   while(1)
-   {
-      if (buffer)
-      {
-         printf("%s\n",buffer);
-         pthread_mutex_lock(&m);              
-         buffer[0]+=1;
-         pthread_mutex_unlock(&m);                            
-         sleep(changetime); 
-      
-      }
-
-   }
+	 while(1)
+	 {
+		 if(flag == 1)
+		 {
+			 if (buffer)
+			 {
+				 printf("%s\n",buffer);
+				 buffer[0]+=1;
+				 sleep(changetime);
+			 }
+		 }
+	 }
 }
 
 int main()
 {
 
-   pthread_create(&t1,NULL,myfunc1,"Thread1");  
-   pthread_create(&t2,NULL,myfunc2,"Thread2");   
-   while (1)
+   pthread_create(&t1,NULL,myfunc1,"Thread1");
+   pthread_create(&t2,NULL,myfunc2,"Thread2");
+   while (stopprocess != 1)
    {
-               
+
    }
+   pthread_cancel(t1);
+   pthread_cancel(t2);
+   return EXIT_SUCCESS;
 
 }
