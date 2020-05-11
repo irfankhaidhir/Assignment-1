@@ -40,101 +40,109 @@ Instructions:
 #include <pthread.h>
 #include <unistd.h>
 
+#pragma pack(1)
+
+/*union data
+{
+   unsigned int changetime : 4;
+   int flag;
+   int stopprocess;
+}; */
+
+//typedef union data data_t;
+
 unsigned int changetime = 1;
 int flag = 0, stopprocess = 0;
 char *buffer;
 pthread_t t1,t2;
-pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 void *myfunc1(void *ptr) //Thread t1
 {
+   //data_t structure;
    char input[0];
    unsigned int *newtime = (unsigned int*)malloc(sizeof(unsigned int));
    printf("Please enter a command\n q:Quit current program\n c:Create string buffer\n s:Insert user key in string into buffer\n g:Print string buffer\n t:Change Thread 2 updating time\n f:Flag HIGH\n z:Flag LOW\n");
+ 
    while(1)
    {
 
-   scanf("%c",input);
+      scanf("%c",input);
 
-   switch(input[0])
-   {
-      case 'q':
+      switch(input[0])
       {
-         free(newtime);
-         pthread_mutex_lock(&m);
-         stopprocess = 1;
-         pthread_mutex_unlock(&m);
+         case 'q':
+         {
+            free(buffer);
+            free(newtime);         
+            stopprocess = 1;
+            break;
+         }
+
+         case 'c':
+         {
+            buffer=(char*)malloc(sizeof(char));
+            printf("String buffer created\n");
+            break;
+         }
+
+         case 's':
+         {
+            printf("Please key in a string\n");
+            scanf("%s",buffer);
+            break;
+
+         }
+
+         case 'g':
+         printf("%s\n",buffer);
          break;
+
+         case 't':
+         {
+            printf("Enter updated time\n");
+            scanf("%u",newtime);
+            changetime = *newtime;
+            break;
+         }
+
+         case 'f':
+         {
+            flag = 1;
+            break;
+         }
+
+         case 'z':
+         {
+            flag = 0;
+            break;
+         }  
       }
-
-      case 'c':
-      {
-         buffer=(char*)malloc(sizeof(char));
-         printf("String buffer created\n");
-         break;
-      }
-
-      case 's':
-      {
-         char string[20];
-         printf("Please key in a string not more than 20 words\n");
-         scanf("%s",string);
-         buffer=string;
-         break;
-
-      }
-
-      case 'g':
-      printf("%s\n",buffer);
-      break;
-
-      case 't':
-      {
-         printf("Enter updated time\n");
-         scanf("%u",newtime);
-         changetime = *newtime;
-         break;
-      }
-
-      case 'f':
-      {
-    	   pthread_mutex_lock(&m);
-         flag = 1;
-         pthread_mutex_unlock(&m);
-         break;
-      }
-
-      case 'z':
-      {
-         pthread_mutex_lock(&m);
-         flag = 0;
-         pthread_mutex_unlock(&m);
-         break;
-      }
-   }
    }
 }
 
 void *myfunc2(void *ptr) //Thread t2
 {
-	 while(1)
-	 {
-		 if(flag == 1)
-		 {
-			 if (buffer)
-			 {
-				 printf("%s\n",buffer);
-				 buffer[0]+=1;
-				 sleep(changetime);
-			 }
-		 }
-	 }
+
+   while(flag == 0)
+   {
+      sleep(1);
+   }
+
+	while(flag == 1)
+	{
+		if (buffer)
+		{
+			printf("%s\n",buffer);
+			buffer[0]+=1;
+			sleep(changetime);
+		}
+		 
+	}
 }
 
 int main()
 {
-
+   //data_t structure;
    pthread_create(&t1,NULL,myfunc1,"Thread1");
    pthread_create(&t2,NULL,myfunc2,"Thread2");
    while (stopprocess != 1)
