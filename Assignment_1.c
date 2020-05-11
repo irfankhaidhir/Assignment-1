@@ -40,7 +40,7 @@ Instructions:
 #include <pthread.h>
 #include <unistd.h>
 
-#pragma pack(1)
+//#pragma pack(1)
 
 /*union data
 {
@@ -123,21 +123,24 @@ void *myfunc1(void *ptr) //Thread t1
 void *myfunc2(void *ptr) //Thread t2
 {
 
-   while(flag == 0)
+   while(1)
    {
-      sleep(1);
-   }
+      while(flag == 0)
+      {
+         sleep(1);
+      }
 
-	while(flag == 1)
-	{
-		if (buffer)
-		{
-			printf("%s\n",buffer);
-			buffer[0]+=1;
-			sleep(changetime);
-		}
+	   while(flag == 1)
+	   {  
+		   if (buffer)
+		   {
+			   printf("%s\n",buffer);
+			   buffer[0]+=1;
+			   sleep(changetime);
+		   }
 		 
-	}
+	   }
+   }
 }
 
 int main()
