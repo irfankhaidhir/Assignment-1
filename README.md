@@ -19,6 +19,8 @@ Command supported:
 
 ‘f’ : flag HIGH
 
+'z' : flag LOW
+
 Thread 2:
 
 Perform the following function periodically (time control by ‘s’). Default to every seconds
