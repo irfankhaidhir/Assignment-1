@@ -72,7 +72,6 @@ void *myfunc1(void *ptr) //Thread t1
       {
          case 'q':
          {
-            free(buffer);
             free(newtime);         
             stopprocess = 1;
             break;
@@ -82,6 +81,7 @@ void *myfunc1(void *ptr) //Thread t1
          {
             buffer=(char*)malloc(sizeof(char));
             printf("String buffer created\n");
+            free(buffer);            
             break;
          }
 
