@@ -55,6 +55,7 @@ unsigned int changetime = 1;
 int flag = 0, stopprocess = 0;
 char *buffer;
 pthread_t t1,t2;
+pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 
 void *myfunc1(void *ptr) //Thread t1
 {
@@ -72,6 +73,7 @@ void *myfunc1(void *ptr) //Thread t1
       {
          case 'q':
          {
+            free(buffer);
             free(newtime);         
             stopprocess = 1;
             break;
@@ -79,16 +81,26 @@ void *myfunc1(void *ptr) //Thread t1
 
          case 'c':
          {
-            buffer=(char*)malloc(sizeof(char));
-            printf("String buffer created\n");
-            free(buffer);            
+            if (buffer == NULL)
+            {
+               buffer=(char*)malloc(sizeof(char));
+               printf("String buffer created\n");          
+            }
+
+            else
+            {
+               printf("Buffer was created previously\n");
+            }
+            
             break;
          }
 
          case 's':
          {
             printf("Please key in a string\n");
+            pthread_mutex_lock(&m);
             scanf("%s",buffer);
+            pthread_mutex_unlock(&m);
             break;
 
          }
@@ -101,7 +113,9 @@ void *myfunc1(void *ptr) //Thread t1
          {
             printf("Enter updated time\n");
             scanf("%u",newtime);
+            pthread_mutex_lock(&m);
             changetime = *newtime;
+            pthread_mutex_unlock(&m);
             break;
          }
 
@@ -135,8 +149,11 @@ void *myfunc2(void *ptr) //Thread t2
 		   if (buffer)
 		   {
 			   printf("%s\n",buffer);
+            pthread_mutex_lock(&m);
 			   buffer[0]+=1;
+            pthread_mutex_unlock(&m);            
 			   sleep(changetime);
+
 		   }
 		 
 	   }
