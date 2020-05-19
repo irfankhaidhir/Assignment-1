@@ -69,6 +69,7 @@ void *myfunc1(void *ptr) //Thread t1
 
       scanf("%c",input);
 
+      pthread_mutex_lock(&m);
       switch(input[0])
       {
          case 'q':
@@ -111,9 +112,7 @@ void *myfunc1(void *ptr) //Thread t1
          {
             printf("Enter updated time\n");
             scanf("%u",newtime);
-            pthread_mutex_lock(&m);
             changetime = *newtime;
-            pthread_mutex_unlock(&m);
             break;
          }
 
@@ -129,12 +128,12 @@ void *myfunc1(void *ptr) //Thread t1
             break;
          }  
       }
+      pthread_mutex_unlock(&m);
    }
 }
 
 void *myfunc2(void *ptr) //Thread t2
 {
-
    while(1)
    {
       while(flag == 0)
@@ -146,8 +145,10 @@ void *myfunc2(void *ptr) //Thread t2
 	   {  
 		   if (buffer)
 		   {
-			   printf("%s\n",buffer);
-			   buffer[0]+=1;          
+            pthread_mutex_lock(&m);
+			   buffer[0]+=1;
+			   printf("%s\n",buffer);            
+            pthread_mutex_unlock(&m);          
 			   sleep(changetime);             
 		   }
 		 
