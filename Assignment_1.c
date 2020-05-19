@@ -98,9 +98,7 @@ void *myfunc1(void *ptr) //Thread t1
          case 's':
          {
             printf("Please key in a string\n");
-            pthread_mutex_lock(&m);
             scanf("%s",buffer);
-            pthread_mutex_unlock(&m);
             break;
 
          }
@@ -149,11 +147,8 @@ void *myfunc2(void *ptr) //Thread t2
 		   if (buffer)
 		   {
 			   printf("%s\n",buffer);
-            pthread_mutex_lock(&m);
-			   buffer[0]+=1;
-            pthread_mutex_unlock(&m);            
-			   sleep(changetime);
-
+			   buffer[0]+=1;          
+			   sleep(changetime);             
 		   }
 		 
 	   }
