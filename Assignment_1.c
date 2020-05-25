@@ -69,13 +69,12 @@ void *myfunc1(void *ptr) //Thread t1
 
       scanf("%c",input);
 
-      pthread_mutex_lock(&m);
       switch(input[0])
       {
          case 'q':
          {
             free(buffer);
-            free(newtime);         
+            free(newtime);        
             stopprocess = 1;
             break;
          }
@@ -99,7 +98,9 @@ void *myfunc1(void *ptr) //Thread t1
          case 's':
          {
             printf("Please key in a string\n");
+            pthread_mutex_lock(&m);
             scanf("%s",buffer);
+            pthread_mutex_unlock(&m);
             break;
 
          }
@@ -128,7 +129,6 @@ void *myfunc1(void *ptr) //Thread t1
             break;
          }  
       }
-      pthread_mutex_unlock(&m);
    }
 }
 
@@ -136,20 +136,20 @@ void *myfunc2(void *ptr) //Thread t2
 {
    while(1)
    {
-      while(flag == 0)
+      if(flag == 0)
       {
          sleep(1);
       }
 
-	   while(flag == 1)
+	   if(flag == 1)
 	   {  
 		   if (buffer)
 		   {
             pthread_mutex_lock(&m);
 			   buffer[0]+=1;
-			   printf("%s\n",buffer);            
-            pthread_mutex_unlock(&m);          
-			   sleep(changetime);             
+			   printf("%s\n",buffer);
+            pthread_mutex_unlock(&m);                               
+			   sleep(changetime);                      
 		   }
 		 
 	   }
