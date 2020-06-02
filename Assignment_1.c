@@ -119,13 +119,17 @@ void *myfunc1(void *ptr) //Thread t1
 
          case 'f':
          {
+            pthread_mutex_lock(&m);
             flag = 1;
+            pthread_mutex_unlock(&m);
             break;
          }
 
          case 'z':
          {
+            pthread_mutex_lock(&m);
             flag = 0;
+            pthread_mutex_unlock(&m);
             break;
          }  
       }
@@ -136,13 +140,16 @@ void *myfunc2(void *ptr) //Thread t2
 {
    while(1)
    {
+      pthread_mutex_lock(&m);
       if(flag == 0)
       {
+         pthread_mutex_unlock(&m);
          sleep(1);
       }
 
-	   if(flag == 1)
-	   {  
+	   else if(flag == 1)
+	   { 
+         pthread_mutex_unlock(&m); 
 		   if (buffer)
 		   {
             pthread_mutex_lock(&m);
